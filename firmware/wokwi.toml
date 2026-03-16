@@ -1,0 +1,18 @@
+# Wokwi Project Configuration for Smart Feeder
+
+[wokwi]
+version = 1
+firmware = "smart-feeder.elf"
+board = "esp32dev"
+
+# ESP32 DevKit V1
+[board]
+mcu = "esp32"
+flash_size = "4MB"
+
+# Simulation timeout (0 = unlimited)
+timeout = 0
+
+# Virtual serial monitor
+[serial]
+enabled = true

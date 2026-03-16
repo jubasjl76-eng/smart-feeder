@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "author": "Smart Pet IoT",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "esp32-devkit-v1",
+      "id": "esp",
+      "top": 0,
+      "left": 0,
+      "attrs": {}
+    },
+    {
+      "type": "servo",
+      "id": "servo",
+      "top": 90,
+      "left": 0,
+      "attrs": {}
+    },
+    {
+      "type": "ultrasonic-sensor",
+      "id": "ultrasonic",
+      "top": 90,
+      "left": 150,
+      "attrs": {}
+    },
+    {
+      "type": "led",
+      "id": "led",
+      "top": 180,
+      "left": 0,
+      "attrs": {
+        "color": "green"
+      }
+    },
+    {
+      "type": "pushbutton",
+      "id": "button",
+      "top": 180,
+      "left": 120,
+      "attrs": {
+        "bounce": "0"
+      }
+    },
+    {
+      "type": "resistor",
+      "id": "r1",
+      "top": 270,
+      "left": 0,
+      "attrs": {
+        "value": "220"
+      }
+    }
+  ],
+  "connections": [
+    ["esp:4", "servo:PWM", ""],
+    ["esp:5", "ultrasonic:TRIG", ""],
+    ["esp:18", "ultrasonic:ECHO", ""],
+    ["esp:2", "led:VN", ""],
+    ["esp:GND", "led:VSS", ""],
+    ["r1:1", "led:VSS", ""],
+    ["r1:2", "esp:GND", ""],
+    ["button:1", "esp:3V3", ""],
+    ["button:2", "esp:0", ""]
+  ],
+  "dependencies": {}
+}

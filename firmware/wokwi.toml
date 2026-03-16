@@ -1,9 +1,10 @@
 # Wokwi Project Configuration for Smart Feeder
+# Build with: pio run -d firmware/
 
 [wokwi]
 version = 1
-firmware = "smart-feeder.elf"
-board = "esp32dev"
+elf = ".pio/build/esp32dev/firmware.elf"
+firmware = ".pio/build/esp32dev/firmware.bin"
 
 # ESP32 DevKit V1
 [board]
@@ -16,3 +17,6 @@ timeout = 0
 # Virtual serial monitor
 [serial]
 enabled = true
+
+[wasm]
+enabled = false

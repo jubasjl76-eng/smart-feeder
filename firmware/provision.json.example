@@ -1,0 +1,10 @@
+{
+  "wifiSsid": "",
+  "wifiPassword": "",
+  "mqttHost": "",
+  "mqttPort": 1883,
+  "mqttPassword": "",
+  "deviceId": "",
+  "kennelId": "",
+  "tz": "WET0WEST,M3.5.0/1,M10.5.0/2"
+}

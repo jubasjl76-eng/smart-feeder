@@ -38,38 +38,25 @@ A Wi-Fi enabled smart pet feeder with ESP32, scheduled feeding, and REST API con
 
 ### Firmware
 
-Location: `firmware/smart-feeder.cpp`
-
-1. Install Arduino IDE or PlatformIO
-2. Install ESP32 board support
-3. Update Wi-Fi credentials
-4. Upload to ESP32
-
-### Backend API
-
-Location: `backend/`
+Location: `firmware/main.cpp` — built on
+[smart-pet-device-sdk](https://github.com/jubasjl76-eng/smart-pet-device-sdk).
+The SDK owns Wi-Fi + SoftAP provisioning, NTP, MQTT
+(`kennel/{kennelId}/feeder/{deviceId}/*`), LWT, OTA, command/ack, schedule
+caching and the offline journal; `main.cpp` is just the feeder behaviour. See
+`firmware/README.md` for build / flash / calibration.
 
 ```bash
-cd backend
-npm install
-npm run dev
+pio run -d firmware
 ```
 
-API runs on http://localhost:3002
+The pre-SDK single-file firmware is kept as `firmware/smart-feeder.legacy.cpp`.
 
-## API Endpoints
+### Backend
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /health | Health check |
-| GET | /api/feeders | List all feeders |
-| POST | /api/feeders | Register new feeder |
-| POST | /api/status | Update feeder status |
-| POST | /api/feed | Trigger feeding |
-| GET | /api/schedule | Get schedules |
-| POST | /api/schedule | Create schedule |
-
-**Required Header:** `X-API-Key: your-api-key-here`
+There is no per-device backend any more. The feeder talks MQTT to
+**[smart-pet-backend](https://github.com/jubasjl76-eng/smart-pet-backend)**,
+which owns feeders, schedules, status and the console. The legacy `backend/`
+folder in this repo is dead and will be removed.
 
 ## 3D Design
 
@@ -93,6 +80,51 @@ Open in OpenSCAD to view and export STL files.
 5. Start backend API
 6. Register feeder
 7. Set feeding schedule
+
+## Wokwi Simulation
+
+This firmware can be simulated in Wokwi without physical hardware.
+
+### Simulated Hardware Components
+
+- **ESP32 DevKit V1** - Main microcontroller
+- **Servo Motor** - Food dispensing mechanism
+- **Ultrasonic Sensor** - Food level monitoring
+- **LED** - Status indicator (green)
+- **Push Button** - Manual feed trigger
+
+### Running the Simulation
+
+```bash
+pio run -d firmware
+WOKWI_CLI_TOKEN=<token> wokwi-cli firmware --scenario firmware/feeder.test.yaml --timeout 20000
+```
+
+`firmware/feeder.test.yaml` is the CI smoke test: it boots the emulated ESP32
+and asserts the SDK opens the provisioning portal (no NVS creds). CI runs it on
+every push when a `WOKWI_CLI_TOKEN` repo secret is set. Get a free token at
+<https://wokwi.com/dashboard/ci>.
+
+Or open `firmware/diagram.json` at <https://wokwi.com> and drop in the built
+`firmware/.pio/build/esp32dev/firmware.bin`.
+
+### Pin Connections
+
+| ESP32 Pin | Component |
+|-----------|-----------|
+| 4 | Servo PWM |
+| 5 | Ultrasonic Trig |
+| 18 | Ultrasonic Echo |
+| 2 | Status LED |
+| 0 | Push Button |
+
+### Testing
+
+The simulation will show:
+- Servo rotating when feeding is triggered
+- Ultrasonic sensor measuring food level
+- LED blinking on status changes
+- Button press triggering feed events
 
 ## License
 

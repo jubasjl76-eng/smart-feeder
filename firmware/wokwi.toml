@@ -1,0 +1,9 @@
+# Wokwi config for the smart-feeder firmware.
+#   pio run -d firmware
+#   wokwi-cli firmware --scenario firmware/feeder.test.yaml --timeout 20000
+# Paths are relative to this file (the firmware/ dir).
+
+[wokwi]
+version = 1
+elf = ".pio/build/esp32dev/firmware.elf"
+firmware = ".pio/build/esp32dev/firmware.bin"

@@ -1,0 +1,9 @@
+name: "feeder boots and opens the provisioning portal"
+version: 1
+author: "Smart Pet"
+
+# Fresh sim = no NVS creds, so the SDK's Wi-Fi manager should open the SoftAP
+# portal. Reaching this line proves the firmware compiled, linked, flashed into
+# the emulator, booted, and ran dev.begin() without crashing.
+steps:
+  - wait-serial: "[wifi] provisioning AP up:"

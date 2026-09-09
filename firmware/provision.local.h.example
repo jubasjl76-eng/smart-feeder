@@ -1,0 +1,16 @@
+#pragma once
+/*
+ * Copy this file to provision.local.h (gitignored) to seed Wokwi / first boot
+ * into NVS Preferences. Fill in local values; never commit secrets.
+ *
+ * MQTT username is always "device:<deviceId>" and is not a provision field.
+ */
+
+#define PROVISION_WIFI_SSID ""
+#define PROVISION_WIFI_PASSWORD ""
+#define PROVISION_MQTT_HOST ""
+#define PROVISION_MQTT_PORT 1883
+#define PROVISION_MQTT_PASSWORD ""
+#define PROVISION_DEVICE_ID ""
+#define PROVISION_KENNEL_ID ""
+#define PROVISION_TZ "WET0WEST,M3.5.0/1,M10.5.0/2"

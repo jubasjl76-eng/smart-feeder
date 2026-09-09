@@ -1,0 +1,6 @@
+# Device secrets / local Wokwi seed — never commit
+provision.json
+provision.local.h
+
+# PlatformIO build artifacts
+.pio/

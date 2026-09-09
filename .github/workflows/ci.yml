@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  # Authoritative gate: does the SDK port compile + link for esp32dev.
+  build:
+    uses: jubasjl76-eng/smart-pet-ci/.github/workflows/pio-ci.yml@main
+    with:
+      environments: '["esp32dev"]'
+      project-dir: firmware
+      native-test-command: ""
+
+  # Wokwi smoke test: boot the emulated ESP32, assert the provisioning portal
+  # opens. Runs only when a WOKWI_CLI_TOKEN repo secret is set.
+  wokwi:
+    runs-on: ubuntu-latest
+    env:
+      WOKWI_CLI_TOKEN: ${{ secrets.WOKWI_CLI_TOKEN }}
+    steps:
+      - id: gate
+        run: |
+          if [ -n "$WOKWI_CLI_TOKEN" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::No WOKWI_CLI_TOKEN secret — skipping the Wokwi scenario."
+          fi
+      - if: steps.gate.outputs.run == 'true'
+        uses: actions/checkout@v5
+      - if: steps.gate.outputs.run == 'true'
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - if: steps.gate.outputs.run == 'true'
+        run: pip install --upgrade platformio
+      - if: steps.gate.outputs.run == 'true'
+        run: pio run -d firmware
+      - if: steps.gate.outputs.run == 'true'
+        uses: wokwi/wokwi-ci-action@v1
+        with:
+          token: ${{ secrets.WOKWI_CLI_TOKEN }}
+          path: firmware
+          scenario: feeder.test.yaml
+          timeout: 20000

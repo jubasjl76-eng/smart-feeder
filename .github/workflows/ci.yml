@@ -1,0 +1,15 @@
+name: CI
+on:
+  push:
+    branches: [main, development]
+  pull_request:
+jobs:
+  ci:
+    uses: jubasjl76-eng/smart-pet-ci/.github/workflows/pio-ci.yml@main
+    with:
+      project-dir: firmware
+      environments: '["esp32dev"]'
+      # tests/*.cpp are placeholder stubs (no framework, no main()) — not wired
+      # up as a real PlatformIO test target yet.
+      native-test-command: ""
+      size-check: true

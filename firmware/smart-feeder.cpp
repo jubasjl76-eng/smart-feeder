@@ -418,7 +418,7 @@ void handleQueuedCommand(const char* json) {
     logEvent(String("MQTT feed amount=") + String(amount));
     requestFeed(amount);
   } else if (strcmp(command, "schedule_set") == 0) {
-    char snapshot[MQTT_MSG_MAX];
+    static char snapshot[MQTT_MSG_MAX];
     if (doc["params"]["schedules"].is<JsonArray>()) {
       serializeJson(doc["params"]["schedules"], snapshot, sizeof(snapshot));
       applyScheduleSet(snapshot);

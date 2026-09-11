@@ -231,7 +231,9 @@ void clearSchedules() {
 }
 
 bool parseSchedulesFromJson(const char* json) {
-  StaticJsonDocument<2048> doc;
+  // static: keeps these off the ESP32 loop task's stack (single-threaded,
+  // non-reentrant — deserializeJson()/reuse below is safe).
+  static StaticJsonDocument<2048> doc;
   DeserializationError err = deserializeJson(doc, json);
   if (err) {
     logEvent(String("ERROR: schedule JSON: ") + err.c_str());
@@ -245,7 +247,7 @@ bool parseSchedulesFromJson(const char* json) {
     logEvent("ERROR: schedule_set missing schedules array");
     return false;
   }
-  FeedingSchedule parsed[MAX_SCHEDULES];
+  static FeedingSchedule parsed[MAX_SCHEDULES];
   int n = 0;
   for (JsonObject sched : arr) {
     if (n >= MAX_SCHEDULES) break;
@@ -275,8 +277,9 @@ bool parseSchedulesFromJson(const char* json) {
 }
 
 void persistSchedules() {
-  StaticJsonDocument<2048> doc;
-  JsonArray arr = doc.to<JsonArray>();
+  // static: same stack-budget reasoning as parseSchedulesFromJson() above.
+  static StaticJsonDocument<2048> doc;
+  JsonArray arr = doc.to<JsonArray>(); // to<T>() clears the document first
   for (int i = 0; i < scheduleCount; i++) {
     JsonObject o = arr.createNestedObject();
     o["id"] = schedules[i].id;
@@ -286,7 +289,7 @@ void persistSchedules() {
     o["amount"] = schedules[i].amount;
     o["enabled"] = schedules[i].enabled;
   }
-  char json[2048];
+  static char json[2048];
   serializeJson(arr, json, sizeof(json));
   preferences.putString("schedules", json);
 }
@@ -402,7 +405,8 @@ bool idsMatchCommand(JsonDocument& root) {
 }
 
 void handleQueuedCommand(const char* json) {
-  StaticJsonDocument<2048> doc;
+  // static: same stack-budget reasoning as parseSchedulesFromJson() above.
+  static StaticJsonDocument<2048> doc;
   DeserializationError err = deserializeJson(doc, json);
   if (err) { logEvent(String("ERROR: command JSON: ") + err.c_str()); return; }
   if (!idsMatchCommand(doc)) { logEvent("Ignoring command for another device"); return; }
@@ -414,7 +418,7 @@ void handleQueuedCommand(const char* json) {
     logEvent(String("MQTT feed amount=") + String(amount));
     requestFeed(amount);
   } else if (strcmp(command, "schedule_set") == 0) {
-    char snapshot[MQTT_MSG_MAX];
+    static char snapshot[MQTT_MSG_MAX];
     if (doc["params"]["schedules"].is<JsonArray>()) {
       serializeJson(doc["params"]["schedules"], snapshot, sizeof(snapshot));
       applyScheduleSet(snapshot);
